@@ -421,7 +421,7 @@ const isDone = id => !!(prog[id] && prog[id].done);
 
 /* ---------- local fallback ---------- */
 /* Without shared storage (e.g. the Vercel copy), a fresh browser starts with 1..LOCAL_START_DONE already done. */
-const LOCAL_START_DONE = 63, LOCAL_PLAN_START = "2026-11-10";
+const LOCAL_START_DONE = 62, LOCAL_PLAN_START = "2026-11-10";
 function loadLocal(){
   let stored = null;
   try { stored = localStorage.getItem("brak-prog"); } catch(e){}

@@ -1,0 +1,651 @@
+<title>Alinhamento Brakmariano</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700;900&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans+SC:wght@500;700&display=swap">
+<style>
+/* Layout: a charred Brâkmar wall, lit by embers, holding parchment scrolls (sessions) pinned in a single reading column. */
+:root{
+  color-scheme: dark;
+  --char:#160e0d;        /* page ground: burnt stone */
+  --char-2:#24100e;      /* raised dark surface */
+  --blood:#a3221b;       /* Brâkmar red */
+  --blood-deep:#6e1410;
+  --ember:#ef7a2b;       /* fire accent */
+  --gold:#d9a441;        /* metal trim */
+  --parch:#efe1c0;       /* scroll */
+  --parch-2:#e2cfa4;     /* scroll shadow */
+  --ink:#3a2216;         /* ink on parchment */
+  --ink-soft:#7a5a43;
+  --ash:#b7a597;         /* text on dark */
+  --bone:#f6ead2;
+  --ok:#4f7a2c;
+  --late:#c2361f;
+  --f-display:"Grenze Gotisch", "UnifrakturMaguntia", Georgia, serif;
+  --f-body:"Alegreya Sans", "Trebuchet MS", system-ui, sans-serif;
+  --f-label:"Alegreya Sans SC", "Alegreya Sans", system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+body{
+  background:
+    radial-gradient(1200px 500px at 50% -120px, rgba(239,122,43,.28), transparent 70%),
+    radial-gradient(700px 400px at 100% 100%, rgba(163,34,27,.25), transparent 70%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,.012) 0 2px, transparent 2px 7px),
+    var(--char);
+  background-attachment: fixed;
+  color:var(--ash);
+  font-family:var(--f-body);
+  font-size:16px;
+  line-height:1.45;
+  min-height:100vh;
+}
+.wrap{max-width:880px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:28px 64px;display:flex;flex-direction:column;gap:22px}
+
+/* ---------- header ---------- */
+header.crest{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.sigil{width:72px;height:72px;flex:none}
+.crest h1{font-family:var(--f-display);font-weight:900;font-size:clamp(2rem,6vw,3.1rem);line-height:.95;margin:0;color:var(--bone);letter-spacing:.01em;text-wrap:balance;text-shadow:0 2px 0 var(--blood-deep),0 0 24px rgba(239,122,43,.35)}
+.crest p{margin:4px 0 0;font-family:var(--f-label);letter-spacing:.08em;color:var(--gold);font-size:.95rem}
+
+.meter{background:linear-gradient(180deg,#2c1612,#1c0f0d);border:2px solid #4a2a1c;box-shadow:inset 0 0 0 1px rgba(217,164,65,.25),0 8px 24px rgba(0,0,0,.45);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.meter-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+.count{font-family:var(--f-display);font-size:2.6rem;line-height:1;color:var(--bone);font-variant-numeric:tabular-nums}
+.count small{font-size:1.1rem;color:var(--ash)}
+.count-label{font-family:var(--f-label);letter-spacing:.08em;color:var(--gold);font-size:.85rem}
+.bar{position:relative;height:18px;border-radius:9px;background:#0e0807;border:1px solid #4a2a1c;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:linear-gradient(90deg,var(--blood-deep),var(--blood) 55%,var(--ember));box-shadow:0 0 14px rgba(239,122,43,.6);transition:width .5s ease}
+.bar b{position:absolute;top:0;bottom:0;width:1px;background:rgba(246,234,210,.18)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:rgba(0,0,0,.25);border:1px solid #3d2318;border-radius:4px;padding:8px 10px;min-width:0}
+.stat span{display:block;font-family:var(--f-label);font-size:.75rem;letter-spacing:.09em;color:var(--ash)}
+.stat strong{display:block;color:var(--bone);font-weight:700;font-size:1.02rem}
+.stat strong.ok{color:#9fcf6a}.stat strong.late{color:#ff8a6b}
+
+.sync{font-size:.82rem;color:var(--ash);display:flex;gap:8px;align-items:center}
+.sync::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--ash)}
+.sync.live::before{background:#8fd15a;box-shadow:0 0 8px #8fd15a}
+.sync.local::before{background:var(--ember)}
+
+/* ---------- tabs ---------- */
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;border-bottom:2px solid #4a2a1c}
+nav.tabs button{font-family:var(--f-label);font-size:1rem;letter-spacing:.06em;background:transparent;color:var(--ash);border:2px solid transparent;border-bottom:none;padding:8px 14px;border-radius:6px 6px 0 0;cursor:pointer;margin-bottom:-2px}
+nav.tabs button[aria-selected="true"]{background:var(--char-2);color:var(--bone);border-color:#4a2a1c;box-shadow:inset 0 2px 0 var(--ember)}
+nav.tabs button:hover{color:var(--bone)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ember);outline-offset:2px}
+
+/* ---------- scroll (parchment) ---------- */
+.scroll{background:
+  radial-gradient(ellipse at 20% 0%, rgba(255,255,255,.35), transparent 60%),
+  linear-gradient(180deg,var(--parch),var(--parch-2));
+  color:var(--ink);border-radius:3px;position:relative;
+  box-shadow:0 0 0 1px #8a6a45,0 0 0 4px #3a2216,0 0 0 5px #8a6a45,0 10px 28px rgba(0,0,0,.55);
+  padding:14px 16px}
+.scroll + .scroll{margin-top:0}
+.list{display:flex;flex-direction:column;gap:18px}
+
+.sess-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;border-bottom:1px dashed rgba(58,34,22,.35);padding-bottom:8px;margin-bottom:6px}
+.sess-date{font-family:var(--f-display);font-size:1.45rem;font-weight:700;line-height:1.05}
+.sess-date em{font-style:normal;font-family:var(--f-label);font-size:.82rem;letter-spacing:.08em;color:var(--blood);margin-left:8px;vertical-align:middle}
+.sess-tag{font-family:var(--f-label);font-size:.78rem;letter-spacing:.08em;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.sess-tag.today{color:var(--blood);background:rgba(163,34,27,.08)}
+.sess-tag.done{color:var(--ok)}
+.scroll.is-today{box-shadow:0 0 0 1px #8a6a45,0 0 0 4px var(--blood),0 0 0 5px var(--gold),0 0 30px rgba(239,122,43,.45),0 10px 28px rgba(0,0,0,.55)}
+.ghost{font-family:var(--f-label);letter-spacing:.05em;font-size:.82rem;background:transparent;border:1px solid rgba(58,34,22,.45);color:var(--ink-soft);border-radius:4px;padding:3px 9px;cursor:pointer}
+.ghost:hover{color:var(--blood);border-color:var(--blood)}
+
+/* ---------- mission row ---------- */
+.m{display:grid;grid-template-columns:auto 1fr;gap:12px;padding:10px 2px;align-items:start}
+.m + .m{border-top:1px solid rgba(58,34,22,.15)}
+.m-body{min-width:0;display:flex;flex-direction:column;gap:3px}
+.m-title{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.num{font-family:var(--f-label);font-weight:700;color:var(--blood);font-variant-numeric:tabular-nums;font-size:.9rem;min-width:3.2em}
+.pt{font-weight:700;font-size:1.05rem}
+.fr{font-style:italic;color:var(--ink-soft);font-size:.92rem}
+.links{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.links a{font-family:var(--f-label);font-size:.82rem;letter-spacing:.05em;color:var(--ink);text-decoration:none;border:1px solid rgba(58,34,22,.4);background:rgba(255,255,255,.35);border-radius:3px;padding:1px 8px}
+.links a:hover{background:var(--ink);color:var(--parch)}
+.links a.fr-l::before{content:"FR · "}
+.links a.pt-l::before{content:"PT · "}
+.alt{font-size:.84rem;color:var(--ink-soft)}
+.alt a{color:var(--blood)}
+.meta{font-size:.82rem;color:var(--ok);font-weight:500}
+.m.is-done .pt{text-decoration:line-through;text-decoration-color:rgba(163,34,27,.6);text-decoration-thickness:2px}
+.m.is-done{opacity:.82}
+
+/* wax-seal checkbox */
+.seal{position:relative;width:34px;height:34px;flex:none;cursor:pointer;display:block;margin-top:2px}
+.seal input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;width:100%;height:100%}
+.seal span{position:absolute;inset:0;border-radius:50%;border:2px dashed rgba(58,34,22,.55);background:rgba(255,255,255,.25);transition:transform .15s ease}
+.seal input:checked + span{border:none;background:radial-gradient(circle at 35% 30%,#d8483a,var(--blood) 55%,var(--blood-deep));box-shadow:0 2px 0 rgba(0,0,0,.35),inset 0 0 0 3px rgba(0,0,0,.18);transform:rotate(-8deg)}
+.seal input:checked + span::after{content:"";position:absolute;left:11px;top:7px;width:8px;height:15px;border:solid var(--bone);border-width:0 3px 3px 0;transform:rotate(40deg)}
+.seal input:focus-visible + span{outline:2px solid var(--ember);outline-offset:2px}
+.seal input:disabled{cursor:not-allowed}
+
+/* ---------- all missions ---------- */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toolbar input[type=search]{flex:1 1 220px;min-width:0;background:#0e0807;border:1px solid #4a2a1c;color:var(--bone);border-radius:4px;padding:8px 10px;font:inherit}
+.seg{display:flex;border:1px solid #4a2a1c;border-radius:4px;overflow:hidden}
+.seg button{background:transparent;color:var(--ash);border:none;padding:7px 12px;font-family:var(--f-label);letter-spacing:.05em;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--blood);color:var(--bone)}
+.block-title{font-family:var(--f-display);font-size:1.3rem;color:var(--bone);margin:0}
+.decade{font-family:var(--f-label);letter-spacing:.1em;color:var(--blood);font-size:.82rem;padding-top:8px}
+details.hist summary{cursor:pointer;font-family:var(--f-label);letter-spacing:.06em;color:var(--gold);padding:6px 0}
+details.hist[open] summary{margin-bottom:12px}
+
+/* ---------- settings ---------- */
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.field .lab{font-family:var(--f-label);letter-spacing:.07em;font-size:.85rem;color:var(--ink-soft)}
+.field input{background:rgba(255,255,255,.55);border:1px solid rgba(58,34,22,.45);border-radius:4px;padding:7px 9px;font:inherit;color:var(--ink);color-scheme:light}
+.days{display:flex;gap:5px;flex-wrap:wrap}
+.days button{width:40px;height:34px;border-radius:4px;border:1px solid rgba(58,34,22,.45);background:transparent;color:var(--ink-soft);font-family:var(--f-label);cursor:pointer}
+.days button[aria-pressed="true"]{background:var(--ink);color:var(--parch)}
+.btn{font-family:var(--f-label);letter-spacing:.06em;background:var(--blood);color:var(--bone);border:1px solid var(--blood-deep);border-radius:4px;padding:7px 14px;cursor:pointer;font-size:.95rem}
+.btn:hover{background:#bb2b22}
+.btn.warn{background:var(--ink)}
+.row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
+.hint{font-size:.88rem;color:var(--ink-soft);margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:.85rem;border:1px solid rgba(58,34,22,.4);border-radius:999px;padding:2px 4px 2px 10px;display:inline-flex;gap:6px;align-items:center}
+.chip button{border:none;background:transparent;color:var(--blood);cursor:pointer;font-size:1rem;line-height:1}
+h3.sub{font-family:var(--f-display);font-size:1.25rem;margin:4px 0 6px}
+.scroll p{max-width:65ch}
+
+.empty{color:var(--ink-soft);font-style:italic;padding:8px 0}
+.foot{font-size:.82rem;color:var(--ash);text-align:center}
+.foot a{color:var(--gold)}
+.banner{background:rgba(239,122,43,.12);border:1px solid rgba(239,122,43,.4);color:var(--bone);border-radius:4px;padding:8px 12px;font-size:.9rem}
+
+@media (max-width:520px){
+  .sigil{width:54px;height:54px}
+  .count{font-size:2.1rem}
+  .sess-date{font-size:1.25rem}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="crest">
+    <svg class="sigil" viewBox="0 0 72 72" aria-hidden="true">
+      <defs><radialGradient id="g" cx="50%" cy="35%" r="65%"><stop offset="0" stop-color="#e2493a"/><stop offset=".6" stop-color="#a3221b"/><stop offset="1" stop-color="#4c0d0a"/></radialGradient></defs>
+      <path d="M36 4 L64 16 L60 46 Q52 62 36 68 Q20 62 12 46 L8 16 Z" fill="url(#g)" stroke="#d9a441" stroke-width="2.5"/>
+      <path d="M22 20 Q26 30 30 30 M50 20 Q46 30 42 30" fill="none" stroke="#f6ead2" stroke-width="3" stroke-linecap="round"/>
+      <path d="M36 28 Q44 38 36 54 Q28 38 36 28 Z" fill="#ef7a2b" stroke="#f6ead2" stroke-width="1.5"/>
+    </svg>
+    <div>
+      <h1>Alinhamento Brakmariano</h1>
+      <p>Diário de missões · 100 missões de alinhamento</p>
+    </div>
+  </header>
+
+  <section class="meter" aria-label="Progresso">
+    <div class="meter-top">
+      <div>
+        <div class="count-label">Missões cumpridas</div>
+        <div class="count"><span id="cnt">0</span> <small>/ 100</small></div>
+      </div>
+      <div class="sync" id="sync">Conectando…</div>
+    </div>
+    <div class="bar" id="bar"><i id="barFill" style="width:0%"></i></div>
+    <div class="stats">
+      <div class="stat"><span>PRÓXIMA SESSÃO</span><strong id="sNext">—</strong></div>
+      <div class="stat"><span>RITMO DO PLANO</span><strong id="sPace">—</strong></div>
+      <div class="stat"><span>PREVISÃO DA Nº 100</span><strong id="sEnd">—</strong></div>
+      <div class="stat"><span>PLANO</span><strong id="sPlan">—</strong></div>
+    </div>
+  </section>
+
+  <div class="banner" id="banner" hidden></div>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" id="t-crono" data-tab="crono" aria-selected="true">Cronograma</button>
+    <button role="tab" id="t-todas" data-tab="todas" aria-selected="false">Todas as missões</button>
+    <button role="tab" id="t-ordens" data-tab="ordens" aria-selected="false">Ordens</button>
+    <button role="tab" id="t-ajustes" data-tab="ajustes" aria-selected="false">Ajustar plano</button>
+  </nav>
+
+  <section id="v-crono" class="list"></section>
+
+  <section id="v-todas" class="list" hidden>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Buscar por nome (PT ou FR) ou número">
+      <div class="seg" role="group" aria-label="Filtro">
+        <button data-f="all" aria-pressed="true">Todas</button>
+        <button data-f="todo" aria-pressed="false">Pendentes</button>
+        <button data-f="done" aria-pressed="false">Feitas</button>
+      </div>
+    </div>
+    <div class="scroll" id="allList"></div>
+  </section>
+
+  <section id="v-ordens" class="list" hidden></section>
+
+  <section id="v-ajustes" class="list" hidden>
+    <div class="scroll">
+      <h3 class="sub">Ritmo</h3>
+      <div class="form">
+        <div class="field"><label for="pStart">Começo do plano</label><input type="date" id="pStart"></div>
+        <div class="field"><label for="pPer">Missões por sessão</label><input type="number" id="pPer" min="1" max="10"></div>
+        <div class="field"><label for="pGap">Intervalo entre sessões (dias)</label><input type="number" id="pGap" min="1" max="7"></div>
+      </div>
+      <div class="field" style="margin-top:14px">
+        <span class="lab">Dias em que podemos jogar</span>
+        <div class="days" id="pDays"></div>
+      </div>
+      <p class="hint" style="margin-top:12px">O cronograma sempre recalcula a partir de hoje com as missões que faltam. Se vocês atrasarem, tudo empurra sozinho; se adiantarem, o fim chega antes.</p>
+    </div>
+
+    <div class="scroll">
+      <h3 class="sub">Dias pulados</h3>
+      <div class="chips" id="pSkips"></div>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label for="pSkipAdd">Pular uma data</label><input type="date" id="pSkipAdd"></div>
+        <button class="btn" id="pSkipBtn">Pular data</button>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <h3 class="sub">Já começamos antes</h3>
+      <p class="hint">Marque de uma vez as missões que vocês já tinham feito antes de usar este diário. Elas contam no total, mas não entram nas sessões.</p>
+      <div class="row" style="margin-top:10px">
+        <div class="field"><label for="pPrior">Feitas até a missão nº</label><input type="number" id="pPrior" min="1" max="100" value="1"></div>
+        <button class="btn" id="pPriorBtn">Marcar 1 até N</button>
+        <button class="btn warn" id="pPriorOk" hidden>Confirmar</button>
+      </div>
+    </div>
+  </section>
+
+  <p class="foot">Guias: <a href="https://www.dofuspourlesnoobs.com/alignement-bracirckmarien.html" target="_blank" rel="noopener">Dofus pour les Noobs (FR)</a> · <a href="https://dofus.fandom.com/pt-br/wiki/Alinhamento" target="_blank" rel="noopener">Dofus Wiki (PT-BR)</a></p>
+</div>
+
+<script>
+/* ---------- data: [FR name, FR slug, PT name] ---------- */
+const RAW = [
+["Cliquetis fou","cliquetis-fou","Rima Louca"],
+["Le professionnel","le-professionnel","O profissional"],
+["Un coup de fouet","un-coup-de-fouet","Cílio"],
+["Le dentiste dément","le-dentiste-deacutement","Dentista Mental"],
+["La revanche de Mak","la-revanche-de-mak","Vingança de Mak"],
+["La noirceur des armes blanches","la-noirceur-des-armes-blanches","Escuridão das Armas"],
+["La mise à mort","la-mise-agrave-mort","A Execução"],
+["Les gardes d'honneur... à punir","les-gardes-dhonneur-agrave-punir","Guardas de Honra... devem ser punidos"],
+["Un oubli regrettable","un-oubli-regrettable","Um grande equívoco"],
+["Tête de gland","tecircte-de-gland","Cabeça de noz"],
+["Pauvre larve","pauvre-larve","Pobre larva"],
+["Pauvre larve... dorée","pauvre-larve-doreacutee","Pobre larva... Dourada"],
+["Agent double et demi","agent-double-et-demi","Agente Duplo e Meio"],
+["Livreur de mauvaise nouvelle","livreur-de-mauvaise-nouvelle","Entrega de Más notícias"],
+["Une collection digne de Xilébo","une-collection-digne-de-xileacutebo","Uma coleção digna de Xilebo"],
+["D'égout pillé","deacutegout-pilleacute","No fundo do esgoto"],
+["Le tabi mangeur de blops","le-tabi-mangeur-de-blops","O Tabi comedor de Blops"],
+["Alchimie malfaisante","alchimie-malfaisante","Alquimista Maligno"],
+["Des capes typiques","des-capes-typiques","Capas Típicas"],
+["Le testament du papa","le-testament-du-papa","O testamento do papai"],
+["Amadouer ou corrompre ?","amadouer-ou-corrompre","Para adular ou para subornar?"],
+["Taxe gratuite","taxe-gratuite","Sem impostos"],
+["Par la force ou par la finesse ?","par-la-force-ou-par-la-finesse","Uso da força ou da inteligência?"],
+["Le dur travail d'éplucheur de patates","le-dur-travail-deacuteplucheur-de-patates","O duro trabalho de um descascador de batatas"],
+["Cruel, mais à quel point","cruel-mais-agrave-quel-point","Cruel? Mais do que você pensaria..."],
+["Activités volcaniques","activiteacutes-volcaniques","Atividades vulcânicas"],
+["Chasse à l'espion","chasse-agrave-lespion","Perseguindo Espiões"],
+["Un petit oubli","un-petit-oubli","Um pequeno equívoco"],
+["Du venin sinon rien","du-venin-sinon-rien","Veneno ou nada"],
+["Le défi du maître guerrier","le-deacutefi-du-maicirctre-guerrier","O desafio do mestre guerreiro"],
+["Joie de courte durée","joie-de-courte-dureacutee","Alegria passageira"],
+["Au combat !","au-combat","Ao combate!"],
+["Un assassin... à Bonta ?","un-assassin-agrave-bonta","Um assassino... em Bonta?"],
+["Un dentier pour l'ami Mak","un-dentier-pour-lami-mak","Uma dentadura para o amigo Mak"],
+["Un choix difficile","un-choix-difficile","Uma escolha difícil"],
+["Arrivée à bon port","arriveacutee-agrave-bon-port","Porto seguro"],
+["Humiliation sans précédent","humiliation-sans-preacuteceacutedent","Humilhação sem precedentes"],
+["Opposition aux opposants","opposition-aux-opposants","Oposição aos opositores"],
+["À la rescousse d'un incapable","agrave-la-rescousse-dun-incapable","O resgate de um inútil"],
+["Mulanthropie","mulanthropie","Mulantropia"],
+["Triple X","triple-x","Triplo X"],
+["X comme Xephirès","x-comme-xephiregraves","X de Xephires"],
+["Opération commando","opeacuteration-commando","Operação comando"],
+["Rencontre du premier type","rencontre-du-premier-type","Contato imediato de primeiro grau"],
+["Joyau... ze fête","joyau-ze-fecircte","Joia rara"],
+["Le cristal de Kain Dharyn","le-cristal-de-kain-dharyn","O cristal de Kan Daryn"],
+["Cambriolage","cambriolage","Arrombamento"],
+["Livraison rapide","livraison-rapide","Entrega Imediata"],
+["Le moment de vérité","le-moment-de-veacuteriteacute","Hora da Verdade"],
+["Le puits sans fond","le-puits-sans-fond","O poço sem fundo"],
+["Le carnage des plaines","le-carnage-des-plaines","Massacre nas Planícies"],
+["Dans la peau de Sphincter Cell","dans-la-peau-de-sphincter-cell","No encalço de Sphincter Cell"],
+["Le forgeron aux deux mains gauches","le-forgeron-aux-deux-mains-gauches","Em casa de ferreiro, o espeto é de pau"],
+["Mon nom est poison","mon-nom-est-poison","Apenas me chame de veneno"],
+["Un maître ès pion","un-maicirctre-egraves-pion","O espião que continua a dar"],
+["Supermilicien","supermilicien","Supermiliciano"],
+["Le forgeron","le-forgeron","O ferreiro"],
+["Paranoïa aigüe","paranoiumla-aiguumle","Ajude Paranoia"],
+["À la manière des Brâkmariens","agrave-la-maniegravere-des-bracirckmariens","Jeitinho brakmariano"],
+["Le trésor de La Descemer","le-treacutesor-de-la-descemer","O tesouro do Descemer"],
+["Une rumeur alléchante","une-rumeur-alleacutechante","Um boato tentador"],
+["Enquête à Moon","enquecircte-agrave-moon","Investigação na lua"],
+["Manière forte","maniegravere-forte","Uso da Força"],
+["Retour aux origines","retour-aux-origines","De volta às origens"],
+["Une faille dans sa carapace","une-faille-dans-sa-carapace","Uma falha na carapaça"],
+["Les documents avant tout","les-documents-avant-tout","Prioridade aos Documentos"],
+["Contre-espion","contre-espion","Contra-espião"],
+["Histoires de salaces","histoires-de-salaces","A mesma saladainha de sempre"],
+["Affrontement !","affrontement","Confronto!"],
+["Légitime défense","leacutegitime-deacutefense","Legítima defesa"],
+["L'épée maudite","leacutepeacutee-maudite","A espada maldita"],
+["Allez, ce fer","allez-ce-fer","Um ferro diferente"],
+["Poignée d'amour","poigneacutee-damour","Não é uma espada qualquer"],
+["Le Marteau des Chus","le-marteau-des-chus","O martelo de Kaído"],
+["L'épée, ça sent mauvais","leacutepeacutee-ccedila-sent-mauvais","Uma espada fedorenta"],
+["Plus, plus de puissance !","plus-plus-de-puissance","Potência nunca é demais"],
+["Des recherches sur la corne","des-recherches-sur-la-corne","Investigação sobre o chifre"],
+["Maître chanteur","maicirctre-chanteur","O chantagista"],
+["Comploteur malgré lui","comploteur-malgreacute-lui","Conspirador, querendo ou não"],
+["Le roi Estitch","le-roi-estitch","Ali em Stitch"],
+["Le trou d'Uk","le-trou-duk","A toca de Obarue"],
+["Gaspiller l'énergie ensemble","gaspiller-leacutenergie-ensemble","Gastando energia"],
+["Gemme les joyaux","gemme-les-joyaux","Tudo joia"],
+["L'arakne de Leng","larakne-de-leng","A Arakne de Leng"],
+["Marqué d'une pierre blanche","marqueacute-dune-pierre-blanche","Uma pedra no sapato"],
+["L'essor de Qu'Tan","lessor-de-qutan","A expansão de Qu'Tan"],
+["L'habit ne fait pas le moine","lhabit-ne-fait-pas-le-moine","O hábito não faz o monge"],
+["Les clefs du malheur","les-clefs-du-malheur","As chaves da infelicidade"],
+["Chaud devant !","chaud-devant","Chapa quente!"],
+["La vengeance est un plat qui se mange froid","la-vengeance-est-un-plat-qui-se-mange-froid","A vingança é um prato que se come frio"],
+["Mélodie en sous-sol","melodie-en-sous-sol","Assalto a sete palmos"],
+["Un monde en pets","un-monde-en-pets","Mundo fedido"],
+["Mieux vaut guérir que mourir","mieux-vaut-guerir-que-mourir","Melhor curar que morrer"],
+["Le crépuscule des morts-vivants","le-crepuscule-des-morts-vivants","Despertar dos mortos"],
+["Le faux-cul","le-faux-cul","Trilha tortuosa"],
+["Cryptomane","cryptomane","Criptomaníaco"],
+["Sueurs froides","sueurs-froides","Suando frio"],
+["Sur la route d'Erazal","sur-la-route-d-erazal","Na cola de Orazal"],
+["Lettre à Ilyz","lettre-a-ilyz","Carta para Ilyz"],
+["La danse macabre","la-danse-macabre","Dança macabra"]
+];
+const ALTS = {
+  55: [["Le magnanime","le-magnanime"],["Les kamas résolvent tout","les-kamas-resolvent-tout"],["Assassinat effectué","assassinat-effectue"]],
+  66: [["Les ordres sont-ils les ordres ?","les-ordres-sont-ils-les-ordres"],["On m'appelle l'Escargot","on-m-appelle-l-escargot"]]
+};
+const FR = s => "https://www.dofuspourlesnoobs.com/" + s + ".html";
+const PT = n => "https://dofus.fandom.com/pt-br/wiki/" + encodeURIComponent(n.replace(/ /g,"_"));
+const M = RAW.map((r,i)=>({id:"m"+String(i+1).padStart(3,"0"), n:i+1, fr:r[0], slug:r[1], pt:r[2]}));
+
+/* Order apprenticeships: [FR, slug, PT or null, threshold] */
+const ORDERS = [
+  {name:"Ordem do Coração Sangrento", fr:"Ordre du Cœur Saignant", q:[
+    ["Disciple de Djaul","apprentissage--disciple-de-djaul","Aprendizagem: Discípulo de Djaul",20],
+    ["Surineur","apprentissage--surineur","Aprendizagem: Degolador",40],
+    ["Chevalier du Désespoir","apprentissage--chevalier-du-deacutesespoir","Aprendizagem: Cavaleiro do Desespero",60],
+    ["Champion du Chaos","apprentissage-champion-du-chaos","Aprendizagem: Campeão do Caos",80],
+    ["Héros de l'Apocalypse","apprentissage-heros-de-l-apocalypse","Aprendizagem: Herói do Apocalipse",100]]},
+  {name:"Ordem do Olho Pútrido", fr:"Ordre de l'Œil Putride", q:[
+    ["Disciple de Brumaire","apprentissage--disciple-de-brumaire","Aprendizagem: Discípulo de Brumário",20],
+    ["Espion Sombre","apprentissage--espion-sombre","Aprendizagem: Espião Sombrio",40],
+    ["Chasseur d'Âmes","apprentissage--chasseur-dacircmes","Aprendizagem: Caçador de Almas",60],
+    ["Psychopathe","apprentissage--psychopathe",null,80],
+    ["Maître des Ombres","apprentissage-maitre-des-ombres",null,100]]},
+  {name:"Ordem do Espírito Doentio", fr:"Ordre de l'Esprit Malsain", q:[
+    ["Disciple d'Hécate","apprentissage--disciple-dheacutecate","Aprendizagem: Discípulo de Hecate",20],
+    ["Apprenti Sombre","apprentissage--apprenti-sombre",null,40],
+    ["Adepte des Douleurs","apprentissage--adepte-des-douleurs",null,60],
+    ["Maître des Sévices","apprentissage--maicirctre-des-seacutevices",null,80],
+    ["Gardien des Tortures","apprentissage--gardien-des-tortures",null,100]]}
+];
+ORDERS.forEach((o,oi)=>o.q.forEach((x,qi)=>x.id="o"+oi+qi));
+
+/* ---------- dates ---------- */
+const pad = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse = s => { const [y,m,d]=s.split("-").map(Number); return new Date(y,m-1,d); };
+const addDays = (s,n) => { const d=parse(s); d.setDate(d.getDate()+n); return iso(d); };
+const today = () => iso(new Date());
+const WD = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const WDL = ["domingo","segunda","terça","quarta","quinta","sexta","sábado"];
+const MON = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+const fmt = s => { const d=parse(s); return WDL[d.getDay()]+", "+d.getDate()+" "+MON[d.getMonth()]; };
+const fmtShort = s => { const d=parse(s); return d.getDate()+" "+MON[d.getMonth()]+(d.getFullYear()!==new Date().getFullYear()?" "+d.getFullYear():""); };
+const rel = s => { const t=today(); if(s===t) return "Hoje"; if(s===addDays(t,1)) return "Amanhã"; if(s===addDays(t,-1)) return "Ontem"; return ""; };
+
+/* ---------- state ---------- */
+const DEFAULT_PLAN = {start: today(), per:2, gap:2, days:[0,1,2,3,4,5,6], skips:[]};
+let prog = {};             // id -> {done, doneAt, by, prior}
+let plan = {...DEFAULT_PLAN};
+let db = null, user = null, myId = null, names = {};
+let mode = "loading";      // loading | live | local
+let readOnly = false;
+let ui = {tab:"crono", filter:"all", q:""};
+try { const t = localStorage.getItem("brak-tab"); if (t) ui.tab = t; } catch(e) {}
+
+const isDone = id => !!(prog[id] && prog[id].done);
+
+/* ---------- local fallback ---------- */
+/* Without shared storage (e.g. the Vercel copy), a fresh browser starts with 1..LOCAL_START_DONE already done. */
+const LOCAL_START_DONE = 63, LOCAL_PLAN_START = "2026-11-10";
+function loadLocal(){
+  let stored = null;
+  try { stored = localStorage.getItem("brak-prog"); } catch(e){}
+  try { prog = stored ? JSON.parse(stored) : {}; } catch(e){ prog = {}; }
+  if (!stored) M.forEach(m=>{ if (m.n <= LOCAL_START_DONE) prog[m.id] = {done:true, doneAt:null, by:null, prior:true}; });
+  try { plan = {...DEFAULT_PLAN, start: LOCAL_PLAN_START, ...JSON.parse(localStorage.getItem("brak-plan")||"{}")}; } catch(e){ plan = {...DEFAULT_PLAN, start: LOCAL_PLAN_START}; }
+}
+function saveLocal(){
+  try { localStorage.setItem("brak-prog", JSON.stringify(prog)); localStorage.setItem("brak-plan", JSON.stringify(plan)); } catch(e){}
+}
+
+/* ---------- writes ---------- */
+async function writeMission(id, done, extra={}){
+  const rec = done ? {done:true, doneAt: extra.prior ? null : today(), by: myId || null, prior: !!extra.prior} : null;
+  if (rec) prog[id] = rec; else delete prog[id];
+  render();
+  if (mode === "live") {
+    try { rec ? await db.doc("progress/"+id).set(rec) : await db.doc("progress/"+id).delete(); }
+    catch(e){ handleWriteError(e); }
+  } else saveLocal();
+}
+let planTimer = null;
+function savePlan(){
+  render();
+  clearTimeout(planTimer);
+  planTimer = setTimeout(async ()=>{
+    if (mode === "live") { try { await db.doc("config/plan").set(plan); } catch(e){ handleWriteError(e); } }
+    else saveLocal();
+  }, 500);
+}
+function handleWriteError(e){
+  if (e && e.code === "invalid_argument") { readOnly = true; showBanner("Você só pode ver este diário. Peça ao dono acesso de Colaborador para marcar missões."); render(); }
+  else if (e && e.code === "quota_exceeded") showBanner("O armazenamento está cheio. Nada novo foi salvo.");
+  else showBanner("Não deu para salvar agora. Confira a conexão e marque de novo.");
+}
+function showBanner(t){ const b=document.getElementById("banner"); b.textContent=t; b.hidden=false; }
+
+/* ---------- schedule ---------- */
+const allowedDay = s => plan.days.includes(parse(s).getDay());
+function buildSchedule(){
+  const t = today();
+  const pending = M.filter(m=>!isDone(m.id));
+  const doneToday = M.filter(m=>isDone(m.id) && prog[m.id].doneAt===t);
+  const sessions = [];
+  let d = plan.start > t ? plan.start : t;
+  let i = 0, guard = 0, todayUsed = false;
+  while ((i < pending.length) && guard++ < 4000) {
+    if (allowedDay(d) && !plan.skips.includes(d)) {
+      let pre = [], cap = plan.per;
+      if (d === t) { pre = doneToday; cap = plan.per - doneToday.length; todayUsed = true; }
+      const take = pending.slice(i, i + Math.max(cap,0)); i += take.length;
+      sessions.push({date:d, items:[...pre, ...take]});
+      d = addDays(d, plan.gap);
+    } else d = addDays(d, 1);
+  }
+  if (!todayUsed && doneToday.length && pending.length===0) sessions.unshift({date:t, items:doneToday});
+  // history: done (not prior) grouped by date, excluding dates already shown
+  const shown = new Set(sessions.map(s=>s.date));
+  const hist = {};
+  M.forEach(m=>{ const p=prog[m.id]; if(p&&p.done&&!p.prior&&p.doneAt&&!shown.has(p.doneAt)) (hist[p.doneAt] ||= []).push(m); });
+  const history = Object.keys(hist).sort().reverse().map(k=>({date:k, items:hist[k]}));
+  return {sessions, history};
+}
+function expectedByYesterday(){
+  const t = today(); let d = plan.start, sessions = 0, g = 0;
+  while (d < t && g++ < 4000) { if (allowedDay(d)) { sessions++; d = addDays(d, plan.gap); } else d = addDays(d,1); }
+  const prior = M.filter(m=>isDone(m.id) && prog[m.id].prior).length;
+  return Math.min(100, prior + sessions*plan.per);
+}
+
+/* ---------- render ---------- */
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function whoName(id){ return id && names[id] ? names[id] : ""; }
+function missionRow(m, ctx="l"){
+  const p = prog[m.id], done = isDone(m.id);
+  let meta = "";
+  if (done) {
+    const who = whoName(p.by);
+    meta = p.prior ? "Feita antes do diário" : "Feita em " + fmtShort(p.doneAt) + (who ? " · por " + esc(who) : "");
+  }
+  const alt = ALTS[m.n] ? `<div class="alt">O guia FR também lista: ${ALTS[m.n].map(a=>`<a href="${FR(a[1])}" target="_blank" rel="noopener">${esc(a[0])}</a>`).join(" · ")}</div>` : "";
+  return `<div class="m ${done?"is-done":""}">
+    <label class="seal" title="${done?"Desmarcar":"Marcar como feita"}"><input type="checkbox" id="c-${m.id}-${ctx}" data-id="${m.id}" ${done?"checked":""} ${readOnly?"disabled":""} aria-label="Missão ${m.n}: ${esc(m.pt)}"><span></span></label>
+    <div class="m-body">
+      <div class="m-title"><span class="num">Nº ${m.n}</span><span class="pt">${esc(m.pt)}</span></div>
+      <span class="fr">${esc(m.fr)}</span>
+      <div class="links"><a class="fr-l" href="${FR(m.slug)}" target="_blank" rel="noopener">Guia</a><a class="pt-l" href="${PT(m.pt)}" target="_blank" rel="noopener">Wiki</a></div>
+      ${alt}
+      ${meta?`<div class="meta">${meta}</div>`:""}
+    </div></div>`;
+}
+function sessionCard(s, past){
+  const t = today(), isT = s.date === t;
+  const allDone = s.items.every(m=>isDone(m.id));
+  const anyDone = s.items.some(m=>isDone(m.id));
+  const r = rel(s.date);
+  const tag = isT ? `<span class="sess-tag today">SESSÃO DE HOJE</span>` : (allDone ? `<span class="sess-tag done">CUMPRIDA</span>` : "");
+  const skip = (!past && !anyDone && !readOnly) ? `<button class="ghost" data-skip="${s.date}">Pular este dia</button>` : "";
+  return `<article class="scroll ${isT?"is-today":""}">
+    <div class="sess-head"><div class="sess-date">${fmt(s.date)}${r?`<em>${r.toUpperCase()}</em>`:""}</div><div style="display:flex;gap:8px;align-items:center">${tag}${skip}</div></div>
+    ${s.items.map(m=>missionRow(m,"s"+s.date)).join("")}
+  </article>`;
+}
+function render(){
+  const doneN = M.filter(m=>isDone(m.id)).length;
+  document.getElementById("cnt").textContent = doneN;
+  document.getElementById("barFill").style.width = doneN + "%";
+  const {sessions, history} = buildSchedule();
+
+  const next = sessions.find(s=>s.items.some(m=>!isDone(m.id)));
+  document.getElementById("sNext").textContent = next ? (rel(next.date) || fmtShort(next.date)) + " · Nº " + next.items.filter(m=>!isDone(m.id)).map(m=>m.n).join(", ") : "Tudo cumprido!";
+  const exp = expectedByYesterday(), diff = doneN - exp, pace = document.getElementById("sPace");
+  if (plan.start >= today()) { pace.textContent = "Plano começa " + (rel(plan.start)||fmtShort(plan.start)).toLowerCase(); pace.className=""; }
+  else if (diff >= 0) { pace.textContent = diff === 0 ? "Em dia" : diff + " à frente"; pace.className = "ok"; }
+  else { pace.textContent = (-diff) + " atrasada" + (diff<-1?"s":""); pace.className = "late"; }
+  const last = sessions.length ? sessions[sessions.length-1].date : null;
+  document.getElementById("sEnd").textContent = doneN === 100 ? "Concluído" : (last ? fmtShort(last) : "—");
+  document.getElementById("sPlan").textContent = plan.per + " a cada " + plan.gap + (plan.gap===1?" dia":" dias");
+
+  const sync = document.getElementById("sync");
+  sync.className = "sync " + (mode==="live"?"live":mode==="local"?"local":"");
+  sync.textContent = mode==="live" ? "Compartilhado ao vivo" : mode==="local" ? "Salvo só neste navegador" : "Conectando…";
+
+  // cronograma
+  const vc = document.getElementById("v-crono");
+  let html = "";
+  if (!sessions.length && doneN === 100) html += `<article class="scroll"><div class="sess-date">As 100 missões estão cumpridas.</div><p>Brâkmar agradece. Ou não, Brâkmar nunca agradece.</p></article>`;
+  html += sessions.map(s=>sessionCard(s,false)).join("");
+  if (history.length) html += `<details class="hist"><summary>Sessões anteriores (${history.length})</summary><div class="list">${history.map(s=>sessionCard(s,true)).join("")}</div></details>`;
+  vc.innerHTML = html;
+
+  // todas
+  const q = ui.q.trim().toLowerCase();
+  const list = M.filter(m=>{
+    if (ui.filter==="done" && !isDone(m.id)) return false;
+    if (ui.filter==="todo" && isDone(m.id)) return false;
+    if (!q) return true;
+    return String(m.n)===q || m.pt.toLowerCase().includes(q) || m.fr.toLowerCase().includes(q);
+  });
+  let h = "", dec = -1;
+  list.forEach(m=>{ const d = Math.floor((m.n-1)/10); if (d!==dec && !q) { dec=d; h += `<div class="decade">MISSÕES ${d*10+1}–${d*10+10}</div>`; } h += missionRow(m); });
+  document.getElementById("allList").innerHTML = h || `<div class="empty">Nenhuma missão com esse filtro.</div>`;
+
+  // ordens
+  document.getElementById("v-ordens").innerHTML =
+    `<p style="margin:0;max-width:65ch">Missões de aprendizagem das ordens brakmarianas. Ficam fora do cronograma: cada uma libera quando o nível de alinhamento passa do limite indicado.</p>` +
+    ORDERS.map(o=>`<article class="scroll"><div class="sess-head"><div class="sess-date">${esc(o.name)}<em>${esc(o.fr).toUpperCase()}</em></div></div>
+      ${o.q.map(x=>{ const done=isDone(x.id); const id=x.id; return `<div class="m ${done?"is-done":""}">
+        <label class="seal"><input type="checkbox" id="c-${id}" data-id="${id}" ${done?"checked":""} ${readOnly?"disabled":""} aria-label="${esc(x[0])}"><span></span></label>
+        <div class="m-body"><div class="m-title"><span class="num">Alin. ${x[3]}</span><span class="pt">${esc(x[2]?x[2].replace("Aprendizagem: ",""):x[0])}</span></div>
+        <span class="fr">Apprentissage : ${esc(x[0])}</span>
+        <div class="links"><a class="fr-l" href="${FR(x[1])}" target="_blank" rel="noopener">Guia</a>${x[2]?`<a class="pt-l" href="${PT(x[2])}" target="_blank" rel="noopener">Wiki</a>`:""}</div>
+        ${done&&prog[id].doneAt?`<div class="meta">Feita em ${fmtShort(prog[id].doneAt)}</div>`:""}</div></div>`; }).join("")}
+    </article>`).join("");
+
+  // ajustes
+  const setVal = (id,v)=>{ const el=document.getElementById(id); if (document.activeElement!==el) el.value=v; };
+  setVal("pStart", plan.start); setVal("pPer", plan.per); setVal("pGap", plan.gap);
+  document.getElementById("pDays").innerHTML = WD.map((w,i)=>`<button type="button" data-day="${i}" aria-pressed="${plan.days.includes(i)}">${w}</button>`).join("");
+  const sk = [...plan.skips].sort();
+  document.getElementById("pSkips").innerHTML = sk.length ? sk.map(s=>`<span class="chip">${fmt(s)}<button data-unskip="${s}" aria-label="Voltar a jogar em ${fmt(s)}">×</button></span>`).join("") : `<span class="hint">Nenhum dia pulado.</span>`;
+  document.querySelectorAll("#v-ajustes input, #v-ajustes button").forEach(el=>el.disabled = readOnly);
+
+  // tabs
+  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected", b.dataset.tab===ui.tab));
+  ["crono","todas","ordens","ajustes"].forEach(k=>document.getElementById("v-"+k).hidden = k!==ui.tab);
+  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.f===ui.filter));
+}
+
+/* ---------- events ---------- */
+document.addEventListener("change", e=>{
+  const id = e.target.dataset && e.target.dataset.id;
+  if (id) writeMission(id, e.target.checked);
+});
+document.addEventListener("click", e=>{
+  const t = e.target.closest("button"); if (!t) return;
+  if (t.dataset.tab) { ui.tab = t.dataset.tab; try{localStorage.setItem("brak-tab",ui.tab);}catch(_){} render(); }
+  else if (t.dataset.f) { ui.filter = t.dataset.f; render(); }
+  else if (t.dataset.skip) { plan = {...plan, skips:[...new Set([...plan.skips, t.dataset.skip])]}; savePlan(); }
+  else if (t.dataset.unskip) { plan = {...plan, skips:plan.skips.filter(s=>s!==t.dataset.unskip)}; savePlan(); }
+  else if (t.dataset.day !== undefined) {
+    const d = +t.dataset.day; let days = plan.days.includes(d) ? plan.days.filter(x=>x!==d) : [...plan.days, d].sort();
+    if (!days.length) return; plan = {...plan, days}; savePlan();
+  }
+});
+document.getElementById("q").addEventListener("input", e=>{ ui.q = e.target.value; render(); e.target.focus(); });
+document.getElementById("pStart").addEventListener("change", e=>{ if (e.target.value) { plan = {...plan, start:e.target.value}; savePlan(); } });
+document.getElementById("pPer").addEventListener("change", e=>{ const v=Math.min(10,Math.max(1,parseInt(e.target.value)||2)); plan={...plan, per:v}; savePlan(); });
+document.getElementById("pGap").addEventListener("change", e=>{ const v=Math.min(7,Math.max(1,parseInt(e.target.value)||2)); plan={...plan, gap:v}; savePlan(); });
+document.getElementById("pSkipBtn").addEventListener("click", ()=>{ const v=document.getElementById("pSkipAdd").value; if (v) { plan={...plan, skips:[...new Set([...plan.skips, v])]}; savePlan(); } });
+const priorBtn = document.getElementById("pPriorBtn"), priorOk = document.getElementById("pPriorOk"), priorIn = document.getElementById("pPrior");
+priorIn.addEventListener("input", ()=>{ priorBtn.textContent = "Marcar 1 até " + (priorIn.value||"N"); priorOk.hidden = true; });
+priorBtn.addEventListener("click", ()=>{ const n=parseInt(priorIn.value); if (n>=1 && n<=100) { priorOk.hidden=false; priorOk.textContent = "Confirmar: marcar 1 a " + n; } });
+priorOk.addEventListener("click", async ()=>{
+  const n = parseInt(priorIn.value); priorOk.hidden = true;
+  const ids = M.filter(m=>m.n<=n && !isDone(m.id)).map(m=>m.id);
+  for (let i=0;i<ids.length;i+=8) await Promise.all(ids.slice(i,i+8).map(id=>writeMission(id,true,{prior:true})));
+  ui.tab = "crono"; render();
+});
+
+/* ---------- boot ---------- */
+async function resolveNames(){
+  if (!user || !user.profiles) return;
+  const ids = [...new Set(Object.values(prog).map(p=>p.by).filter(Boolean))];
+  if (!ids.length) return;
+  try { const ps = await user.profiles(ids); let changed=false; ids.forEach(id=>{ const n=(ps[id]&&ps[id].name)||""; if (n && names[id]!==n){ names[id]=n; changed=true; } }); if (changed) render(); } catch(e){}
+}
+async function boot(){
+  render();
+  if (!window.claude || !window.claude.use) { mode="local"; loadLocal(); render(); return; }
+  try { db = await window.claude.use("db"); } catch(e){ db = null; }
+  if (!db) { mode="local"; loadLocal(); render(); return; }
+  try { user = await window.claude.use("user"); myId = user ? await user.id() : null;
+        if (user && user.can) { const w = await user.can("data.write"); if (w === false) { readOnly = true; showBanner("Você só pode ver este diário. Peça ao dono acesso de Colaborador para marcar missões."); } } } catch(e){}
+  mode = "live";
+  const timer = setTimeout(()=>showBanner("Ainda não consegui carregar o progresso compartilhado. O que aparece pode estar desatualizado."), 10000);
+  db.collection("progress").onSnapshot(snap=>{
+    if (!snap.metadata.fromCache) { clearTimeout(timer); document.getElementById("banner").hidden = readOnly ? false : true; }
+    const next = {}; snap.docs.forEach(d=>{ if (d.exists) next[d.id] = d.data(); });
+    prog = next; render(); resolveNames();
+  }, err=>{ clearTimeout(timer); showBanner("A conexão com o progresso compartilhado caiu. Recarregue a página."); });
+  db.doc("config/plan").onSnapshot(snap=>{
+    if (snap.exists) plan = {...DEFAULT_PLAN, ...snap.data()};
+    render();
+  }, ()=>{});
+}
+boot();
+</script>
